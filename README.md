@@ -1,4 +1,4 @@
-# 🛡️ Resilient System: Chaos & Auto-Recovery Demo
+# 🛡️ Resilient System: Chaos & Auto-Recovery
 
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
