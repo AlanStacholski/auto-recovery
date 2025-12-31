@@ -39,34 +39,6 @@ Desenvolvi um script de injeção de falhas (`smart_chaos.ps1`) que atua como um
 
 ---
 
-## 🏗️ Arquitetura da Solução
-
-```mermaid
-graph TD;
-    subgraph "Chaos Zone"
-      Script[💣 Smart Chaos Agent]
-    end
-    
-    subgraph "Docker Infrastructure"
-      App[🐍 App (FastAPI)]
-      Daemon[🐳 Docker Daemon]
-    end
-    
-    subgraph "Observability Stack"
-      Prometheus[🔥 Prometheus]
-      Grafana[📊 Grafana]
-    end
-
-    Script -- "1. Monitora Status" --> Daemon
-    Script -- "2. Injeta SIGKILL" --> App
-    Daemon -- "3. Auto-Recovery" --> App
-    Prometheus -- "4. Coleta Métricas (Scrape)" --> App
-    Grafana -- "5. Visualiza Saúde" --> Prometheus
-
-```
-
----
-
 ## 🚀 Como Executar
 
 ### Pré-requisitos
@@ -136,9 +108,7 @@ Durante a execução dos testes de caos, as seguintes métricas foram observadas
 
 ---
 
-**Autor:** [Seu Nome]
+**Autor:** [Alan J Stacholski Júnior]
 *Projeto desenvolvido para demonstração de competências em SRE e DevOps.*
-
-```
 
 ```
