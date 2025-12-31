@@ -1,0 +1,5 @@
+├── main.py            # A aplicação vítima
+├── Dockerfile         # O empacotamento
+├── prometheus.yml     # A coleta de dados
+├── docker-compose.yml # O orquestrador (e recuperador)
+└── chaos.sh           # O destruidor
