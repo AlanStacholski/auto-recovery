@@ -6,109 +6,107 @@
 ![Grafana](https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5391FE?style=for-the-badge&logo=powershell&logoColor=white)
 
-> *"Sistemas robustos não são aqueles que nunca caem, mas aqueles que se levantam sozinhos antes que o cliente perceba."*
+> *"Robust systems are not those that never fall, but those that get back up on their own before the customer notices."*
 
-Este projeto é uma implementação prática de **Engenharia de Caos (Chaos Engineering)** e **Observabilidade**. O objetivo é provar a eficácia de arquiteturas *Self-Healing* (auto-recuperáveis) em ambientes containerizados, monitorando métricas em tempo real enquanto falhas críticas são injetadas propositalmente.
-
----
-
-## ⚡ Por que este projeto é relevante?
-
-A maioria dos projetos de portfólio foca apenas no desenvolvimento da aplicação ("Caminho Feliz"). Este projeto foca na **Operação e Resiliência**, simulando o mundo real onde falhas são inevitáveis.
-
-Ele demonstra competências críticas:
-1.  **Mentalidade SRE (Site Reliability Engineering):** Aceitar que a falha vai ocorrer e projetar o sistema para lidar com ela automaticamente.
-2.  **Cultura DevOps:** Não basta "codar", é preciso garantir que o sistema se sustente em produção sem intervenção manual às 3 da manhã.
-3.  **Observabilidade Real:** Monitoramento não é apenas ver se o servidor está ligado, mas entender o tempo de recuperação (MTTR) e a saúde dos endpoints via dados.
-4.  **Resolução de Problemas Complexos:** Lidar com comportamentos nativos do orquestrador, como *CrashLoops* e *Exponential Backoff*.
+This project is a practical implementation of **Chaos Engineering** and **Observability**. The goal is to prove the effectiveness of *Self-Healing* architectures in containerized environments, monitoring metrics in real-time while deliberately injecting critical failures.
 
 ---
 
-## 🧠 O Desafio Técnico
+## ⚡ Why is this project relevant?
 
-A premissa parece simples: matar um container e vê-lo voltar. Porém, na prática, enfrentamos o comportamento de **Exponential Backoff** do Docker.
+Most portfolio projects focus only on application development ("Happy Path"). This project focuses on **Operations and Resilience**, simulating the real world where failures are inevitable.
 
-### O Problema
-Se um script mata o container repetidamente sem pausas, o Docker entra em modo de proteção, atrasando o restart (10s, 20s, 40s...). Isso gera falsos negativos nos testes e instabilidade na métrica.
-
-### A Solução ("Smart Chaos")
-Desenvolvi um script de injeção de falhas (`smart_chaos.ps1`) que atua como um **orquestrador de caos consciente**:
-1.  **Monitora o Estado:** Ele consulta o Docker Daemon antes de atirar.
-2.  **Respeita o Ciclo:** Se o container está `restarting` ou `exited`, o script aguarda.
-3.  **Ataque Cirúrgico:** O comando `kill` só é disparado quando a aplicação está comprovadamente saudável (`running`).
+It demonstrates critical competencies:
+1.  **SRE (Site Reliability Engineering) Mindset:** Accept that failure will occur and design the system to handle it automatically.
+2.  **DevOps Culture:** It's not enough to "code"; you must ensure the system sustains itself in production without manual intervention at 3 AM.
+3.  **Real Observability:** Monitoring isn't just checking if the server is on, but understanding recovery time (MTTR) and endpoint health via data.
+4.  **Complex Problem-Solving:** Dealing with native orchestrator behaviors, such as *CrashLoops* and *Exponential Backoff*.
 
 ---
 
-## 🚀 Como Executar
+## 🧠 The Technical Challenge
 
-### Pré-requisitos
+The premise seems simple: kill a container and watch it come back. However, in practice, we face the **Exponential Backoff** behavior of Docker.
 
-* Docker e Docker Compose instalados.
+### The Problem
+If a script kills the container repeatedly without pauses, Docker enters protection mode, delaying restart (10s, 20s, 40s...). This generates false negatives in tests and instability in metrics.
 
-### 1. Inicializar a Infraestrutura
+### The Solution ("Smart Chaos")
+I developed a failure injection script (`smart_chaos.ps1`) that acts as a **chaos-aware orchestrator**:
+1.  **Monitors State:** It checks the Docker Daemon before striking.
+2.  **Respects the Cycle:** If the container is `restarting` or `exited`, the script waits.
+3.  **Surgical Attack:** The `kill` command is only fired when the application is provably healthy (`running`).
 
-Suba a aplicação e a stack de monitoramento:
+---
+
+## 🚀 How to Run
+
+### Prerequisites
+
+* Docker and Docker Compose installed.
+
+### 1. Initialize the Infrastructure
+
+Bring up the application and monitoring stack:
 
 ```bash
 docker-compose up -d --build
 
 ```
 
-### 2. Configurar Observabilidade
+### 2. Configure Observability
 
-1. Acesse o Grafana em `http://localhost:3000` (admin/admin).
-2. Adicione o Data Source: `http://prometheus:9090`.
-3. Importe o Dashboard ou crie um painel com a query: `up{job="chaos_app"}`.
+1. Access Grafana at `http://localhost:3000` (admin/admin).
+2. Add the Data Source: `http://prometheus:9090`.
+3. Import the Dashboard or create a panel with the query: `up{job="chaos_app"}`.
 
-### 3. Iniciar o Caos
+### 3. Start the Chaos
 
-Execute o script inteligente (Windows/PowerShell) que derruba a aplicação aleatoriamente:
+Execute the intelligent script (Windows/PowerShell) that brings down the application randomly:
 
 ```powershell
 .\smart_chaos.ps1
 
 ```
 
-*O terminal mostrará os logs de monitoramento, tiro e espera pela recuperação.*
+*The terminal will show monitoring logs, the attack, and wait for recovery.*
 
 ---
 
-## 📊 Métricas Chave
+## 📊 Key Metrics
 
-Durante a execução dos testes de caos, as seguintes métricas foram observadas no Dashboard:
+During chaos engineering test execution, the following metrics were observed on the Dashboard:
 
-| Métrica | Descrição | Resultado |
+| Metric | Description | Result |
 | --- | --- | --- |
-| **Uptime** | Disponibilidade do serviço | 99.9% (Recuperação imediata) |
-| **MTTR** | Tempo Médio de Recuperação | ~3 a 5 segundos |
-| **Crash Loops** | Ciclos de falha contínua | Mitigados pela lógica do script |
+| **Uptime** | Service availability | 99.9% (Immediate recovery) |
+| **MTTR** | Mean Time To Recovery | ~3 to 5 seconds |
+| **Crash Loops** | Continuous failure cycles | Mitigated by script logic |
 
 ---
 
-## 💡 Aprendizados
+## 💡 Learnings
 
-1. **Observabilidade não é opcional:** Sem o Prometheus, não saberíamos a diferença entre uma "oscilação de rede" e um "processo morto".
-2. **Graceful Shutdown vs Hard Kill:** O uso do `docker kill` simula o pior cenário (falta de energia/kernel panic), provando que o `restart: always` é a última linha de defesa eficaz.
-3. **Docker Healthchecks:** A recuperação só é considerada "completa" quando o endpoint `/health` responde 200 OK, não apenas quando o container liga.
+1. **Observability is not optional:** Without Prometheus, we wouldn't know the difference between a "network hiccup" and a "dead process".
+2. **Graceful Shutdown vs Hard Kill:** Using `docker kill` simulates the worst case (power loss/kernel panic), proving that `restart: always` is an effective last line of defense.
+3. **Docker Healthchecks:** Recovery is only considered "complete" when the `/health` endpoint responds with 200 OK, not just when the container starts.
 
 ---
 
-## 📂 Estrutura do Projeto
+## 📂 Project Structure
 
 ```text
 .
-├── main.py            # API Vítima (FastAPI)
-├── Dockerfile         # Definição do Container (com curl p/ healthcheck)
-├── docker-compose.yml # Orquestração e Auto-Recovery
-├── prometheus.yml     # Configuração de Scrape
-├── smart_chaos.ps1    # O Agente do Caos Inteligente
-└── README.md          # Documentação
+├── main.py            # Victim API (FastAPI)
+├── Dockerfile         # Container Definition (with curl for healthcheck)
+├── docker-compose.yml # Orchestration and Auto-Recovery
+├── prometheus.yml     # Scrape Configuration
+├── smart_chaos.ps1    # The Intelligent Chaos Agent
+└── README.md          # Documentation
 
 ```
 
 ---
 
-**Autor:** [Alan J Stacholski Júnior]
-*Projeto desenvolvido para demonstração de competências em SRE e DevOps.*
-
-```
+**Author:** [Alan J Stacholski Júnior]
+*Project developed to demonstrate SRE and DevOps competencies.*
